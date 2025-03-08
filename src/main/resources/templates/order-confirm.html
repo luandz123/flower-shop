@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Flower Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main>
+        <section class="order-confirmation-section">
+            <div class="container">
+                <div class="confirmation-container">
+                    <div class="success-icon">
+                        <span class="material-icons">check_circle</span>
+                    </div>
+                    <h1>Thank You for Your Order!</h1>
+                    <p>Your order has been confirmed and will be shipped soon.</p>
+                    
+                    <div class="order-info">
+                        <div class="order-info-row">
+                            <span>Order Number:</span>
+                            <span th:text="${order.orderNumber}">ORD-12345678</span>
+                        </div>
+                        <div class="order-info-row">
+                            <span>Order Date:</span>
+                            <span th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}">15 May 2023, 14:30</span>
+                        </div>
+                        <div class="order-info-row">
+                            <span>Payment Method:</span>
+                            <span th:text="${order.paymentMethod}">Credit Card</span>
+                        </div>
+                        <div class="order-info-row">
+                            <span>Shipping Address:</span>
+                            <span th:text="${order.shippingAddress}">123 Main St, City, Country</span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-items">
+                        <h3>Order Items</h3>
+                        <div class="order-item" th:each="item : ${order.items}">
+                            <div class="order-item-image">
+                                <img th:src="@{${item.product.imageUrl}}" alt="Product Image">
+                            </div>
+                            <div class="order-item-details">
+                                <h4 th:text="${item.product.name}">Product Name</h4>
+                                <p th:text="${'Quantity: ' + item.quantity}">Quantity: 1</p>
+                                <p th:text="${'$' + #numbers.formatDecimal(item.product.price, 1, 2)}">$25.00</p>
+                            </div>
+                            <div class="order-item-total">
+                                <p th:text="${'$' + #numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">$25.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span th:text="${'$' + #numbers.formatDecimal(order.subtotal, 1, 2)}">$75.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span th:text="${'$' + #numbers.formatDecimal(order.shipping, 1, 2)}">$5.99</span>
+                        </div>
+                        <div class="summary-row discount" th:if="${order.discount > 0}">
+                            <span>Discount</span>
+                            <span th:text="${'-$' + #numbers.formatDecimal(order.discount, 1, 2)}">-$10.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span th:text="${'$' + #numbers.formatDecimal(order.total, 1, 2)}">$70.99</span>
+                        </div>
+                    </div>
+                    
+                    <div class="confirmation-actions">
+                        <a th:href="@{/user/orders}" class="btn btn-primary">View My Orders</a>
+                        <a th:href="@{/products}" class="btn btn-outline">Continue Shopping</a>
+                    </div>
+                    
+                    <div class="order-note">
+                        <p>A confirmation email has been sent to <span th:text="${order.email}">email@example.com</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div th:replace="~{layout :: footer}"></div>
+    
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name + ' - Flower Shop'}">Product Name - Flower Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main>
+        <div class="container">
+            <nav class="breadcrumb">
+                <a th:href="@{/}">Home</a>
+                <span class="separator">/</span>
+                <a th:href="@{/products}">Products</a>
+                <span class="separator">/</span>
+                <a th:href="@{/products(category=${product.category.slug})}" th:text="${product.category.name}">Category</a>
+                <span class="separator">/</span>
+                <span th:text="${product.name}">Product Name</span>
+            </nav>
+            
+            <div class="product-detail">
+                <div class="product-gallery">
+                    <div class="main-image">
+                        <img th:src="@{${product.images[0]}}" alt="Product Image" id="main-product-image">
+                    </div>
+                    <div class="thumbnail-images">
+                        <div th:each="image, iterStat : ${product.images}" class="thumbnail" 
+                             th:classappend="${iterStat.index == 0 ? 'active' : ''}">
+                            <img th:src="@{${image}}" alt="Thumbnail" th:attr="data-index=${iterStat.index}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <h1 th:text="${product.name}">Product Name</h1>
+                    
+                    <div class="ratings">
+                        <div class="stars">
+                            <span class="material-icons" th:each="i : ${#numbers.sequence(1, 5)}"
+                                  th:classappend="${i <= product.rating ? 'filled' : ''}">
+                                star
+                            </span>
+                        </div>
+                        <span class="review-count" th:text="${product.reviewCount + ' reviews'}">24 reviews</span>
+                    </div>
+                    
+                    <div class="price-container">
+                        <p class="price" th:if="${product.discount == 0}" th:text="${'$' + product.price}">$25.00</p>
+                        <div class="price-discount" th:if="${product.discount > 0}">
+                            <p class="price-old" th:text="${'$' + product.originalPrice}">$30.00</p>
+                            <p class="price" th:text="${'$' + product.price}">$25.00</p>
+                            <span class="discount-badge" 
+                                  th:text="${'-' + product.discount + '%'}">-20%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-availability" th:if="${product.inStock}">
+                        <span class="material-icons in-stock">check_circle</span>
+                        <span>In stock and ready to ship</span>
+                    </div>
+                    <div class="product-availability out" th:unless="${product.inStock}">
+                        <span class="material-icons">remove_circle</span>
+                        <span>Out of stock</span>
+                    </div>
+                    
+                    <div class="product-short-desc" th:text="${product.shortDescription}">
+                        A beautiful arrangement of fresh roses perfect for any occasion.
+                    </div>
+                    
+                    <form class="product-form" th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        
+                        <div class="form-group" th:if="${product.options != null && !product.options.isEmpty()}">
+                            <label for="option">Options:</label>
+                            <select id="option" name="optionId" required>
+                                <option value="">Select an option</option>
+                                <option th:each="option : ${product.options}" 
+                                        th:value="${option.id}" 
+                                        th:text="${option.name + ' (+$' + option.additionalPrice + ')'}"
+                                        th:attr="data-price=${product.price + option.additionalPrice}">
+                                    Standard Size (+$0.00)
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantity:</label>
+                            <div class="quantity-input">
+                                <button type="button" class="quantity-btn minus">-</button>
+                                <input type="number" id="quantity" name="quantity" value="1" min="1" max="99">
+                                <button type="button" class="quantity-btn plus">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button type="submit" class="btn btn-primary btn-lg" th:disabled="${!product.inStock}">
+                                <span class="material-icons">shopping_cart</span> 
+                                Add to Cart
+                            </button>
+                            <button type="button" class="btn-icon btn-lg add-to-wishlist" th:attr="data-id=${product.id}">
+                                <span class="material-icons">favorite_border</span>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">SKU:</span>
+                            <span class="meta-value" th:text="${product.sku}">FL-1001</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Category:</span>
+                            <a th:href="@{/products(category=${product.category.slug})}" 
+                               th:text="${product.category.name}">Roses</a>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Tags:</span>
+                            <div class="tag-list">
+                                <a th:each="tag : ${product.tags}" th:href="@{/products(tag=${tag.slug})}" 
+                                   th:text="${tag.name}" class="tag">Tag</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-tabs">
+                <ul class="tab-nav">
+                    <li class="tab-item active" data-tab="description">Description</li>
+                    <li class="tab-item" data-tab="details">Details</li>
+                    <li class="tab-item" data-tab="reviews">Reviews <span th:text="${'(' + product.reviewCount + ')'}"></span></li>
+                </ul>
+                
+                <div class="tab-content">
+                    <div class="tab-pane active" id="description">
+                        <div class="product-description" th:utext="${product.description}">
+                            <p>Detailed product description goes here. This beautiful arrangement includes...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="details">
+                        <table class="product-attributes">
+                            <tr th:each="attribute : ${product.attributes}">
+                                <th th:text="${attribute.name}">Attribute Name</th>
+                                <td th:text="${attribute.value}">Attribute Value</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="tab-pane" id="reviews">
+                        <div class="review-summary">
+                            <div class="average-rating">
+                                <div class="rating-number" th:text="${product.rating}">4.5</div>
+                                <div class="rating-stars">
+                                    <span class="material-icons" th:each="i : ${#numbers.sequence(1, 5)}"
+                                          th:classappend="${i <= product.rating ? 'filled' : ''}">
+                                        star
+                                    </span>
+                                </div>
+                                <div class="rating-count" th:text="${product.reviewCount + ' reviews'}">24 reviews</div>
+                            </div>
+                            
+                            <div class="rating-breakdown">
+                                <div class="rating-row" th:each="i : ${#numbers.sequence(5, 1)}">
+                                    <div class="rating-label" th:text="${i + ' stars'}">5 stars</div>
+                                    <div class="rating-bar">
+                                        <div class="rating-fill" th:style="${'width: ' + product.ratingBreakdown[i] + '%'}"></div>
+                                    </div>
+                                    <div class="rating-percent" th:text="${product.ratingBreakdown[i] + '%'}">75%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="review-list">
+                            <div class="review-item" th:each="review : ${product.reviews}">
+                                <div class="review-header">
+                                    <div class="review-author" th:text="${review.authorName}">John Doe</div>
+                                    <div class="review-date" th:text="${#temporals.format(review.date, 'MMM d, yyyy')}">May 15, 2023</div>
+                                </div>
+                                <div class="review-rating">
+                                    <span class="material-icons" th:each="i : ${#numbers.sequence(1, 5)}"
+                                          th:classappend="${i <= review.rating ? 'filled' : ''}">
+                                        star
+                                    </span>
+                                </div>
+                                <div class="review-content" th:text="${review.content}">
+                                    The flowers were beautiful and arrived on time. Very happy with my purchase!
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="write-review" sec:authorize="isAuthenticated()">
+                            <h3>Write a Review</h3>
+                            <form th:action="@{/products/{id}/reviews(id=${product.id})}" method="post">
+                                <div class="form-group">
+                                    <label>Rating:</label>
+                                    <div class="rating-input">
+                                        <input type="radio" id="star5" name="rating" value="5">
+                                        <label for="star5"></label>
+                                        <input type="radio" id="star4" name="rating" value="4">
+                                        <label for="star4"></label>
+                                        <input type="radio" id="star3" name="rating" value="3">
+                                        <label for="star3"></label>
+                                        <input type="radio" id="star2" name="rating" value="2">
+                                        <label for="star2"></label>
+                                        <input type="radio" id="star1" name="rating" value="1">
+                                        <label for="star1"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-content">Your Review:</label>
+                                    <textarea id="review-content" name="content" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+                        <div class="login-to-review" sec:authorize="!isAuthenticated()">
+                            <p>Please <a th:href="@{/login}">log in</a> to write a review.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="related-products">
+                <h2 class="section-title">Related Products</h2>
+                <div class="product-grid">
+                    <div class="product-card" th:each="product : ${relatedProducts}">
+                        <div class="product-image">
+                            <img th:src="@{${product.imageUrl}}" alt="Product Image">
+                            <div class="product-overlay">
+                                <a th:href="@{'/products/' + ${product.id}}" class="btn btn-secondary">View Details</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 th:text="${product.name}">Product Name</h3>
+                            <p class="price" th:text="${'$' + product.price}">$25.00</p>
+                            <button class="btn btn-primary add-to-cart" th:attr="data-id=${product.id}">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <div th:replace="~{layout :: footer}"></div>
+    
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/product-detail.js}"></script>
+</body>
+</html>

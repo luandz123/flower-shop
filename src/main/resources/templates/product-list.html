@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Flower Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main>
+        <section class="product-listing">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Our Products</h1>
+                    <p>Find the perfect flowers for your special occasion</p>
+                </div>
+                
+                <div class="product-filter-container">
+                    <div class="filter-sidebar">
+                        <div class="filter-section">
+                            <h3>Categories</h3>
+                            <ul class="filter-options">
+                                <li>
+                                    <a th:href="@{/products}" th:classappend="${category == null ? 'active' : ''}">All Products</a>
+                                </li>
+                                <li th:each="cat : ${categories}">
+                                    <a th:href="@{/products(category=${cat.slug})}" 
+                                       th:classappend="${category != null && category.id == cat.id ? 'active' : ''}"
+                                       th:text="${cat.name}">Category Name</a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <h3>Price Range</h3>
+                            <div class="price-range">
+                                <input type="range" id="price-min" min="0" max="200" value="0">
+                                <input type="range" id="price-max" min="0" max="200" value="200">
+                                <div class="price-inputs">
+                                    <div>
+                                        <label for="min-price">Min:</label>
+                                        <input type="number" id="min-price" value="0">
+                                    </div>
+                                    <div>
+                                        <label for="max-price">Max:</label>
+                                        <input type="number" id="max-price" value="200">
+                                    </div>
+                                </div>
+                                <button class="btn btn-secondary apply-filter">Apply</button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <h3>Occasions</h3>
+                            <ul class="filter-options">
+                                <li th:each="occasion : ${occasions}">
+                                    <label>
+                                        <input type="checkbox" th:value="${occasion.id}" name="occasion">
+                                        <span th:text="${occasion.name}">Occasion name</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="product-content">
+                        <div class="product-sorting">
+                            <div class="sort-options">
+                                <label for="sort-by">Sort by:</label>
+                                <select id="sort-by" class="sort-select">
+                                    <option value="popular">Popularity</option>
+                                    <option value="price-asc">Price: Low to High</option>
+                                    <option value="price-desc">Price: High to Low</option>
+                                    <option value="newest">Newest First</option>
+                                </select>
+                            </div>
+                            <div class="view-options">
+                                <button class="btn-icon view-grid active">
+                                    <span class="material-icons">grid_view</span>
+                                </button>
+                                <button class="btn-icon view-list">
+                                    <span class="material-icons">view_list</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-grid">
+                            <div class="product-card" th:each="product : ${products}">
+                                <div class="product-image">
+                                    <img th:src="@{${product.imageUrl}}" alt="Product Image">
+                                    <div class="product-overlay">
+                                        <a th:href="@{'/products/' + ${product.id}}" class="btn btn-secondary">View Details</a>
+                                    </div>
+                                    <span class="product-badge" th:if="${product.isNew}">New</span>
+                                    <span class="product-badge sale" th:if="${product.discount > 0}">Sale</span>
+                                </div>
+                                <div class="product-info">
+                                    <h3>
+                                        <a th:href="@{'/products/' + ${product.id}}" th:text="${product.name}">Product Name</a>
+                                    </h3>
+                                    <p class="product-category" th:text="${product.category.name}">Category</p>
+                                    <div class="price-container">
+                                        <p class="price" th:if="${product.discount == 0}" th:text="${'$' + product.price}">$25.00</p>
+                                        <div class="price-discount" th:if="${product.discount > 0}">
+                                            <p class="price-old" th:text="${'$' + product.originalPrice}">$30.00</p>
+                                            <p class="price" th:text="${'$' + product.price}">$25.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="product-actions">
+                                        <button class="btn btn-primary add-to-cart" th:attr="data-id=${product.id}">
+                                            Add to Cart
+                                        </button>
+                                        <button class="btn-icon add-to-wishlist" th:attr="data-id=${product.id}">
+                                            <span class="material-icons">favorite_border</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pagination" th:if="${totalPages > 1}">
+                            <a th:href="@{/products(page=${currentPage - 1})}" th:if="${currentPage > 1}">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                            <th:block th:each="i: ${#numbers.sequence(1, totalPages)}">
+                                <a th:href="@{/products(page=${i})}" 
+                                   th:text="${i}" 
+                                   th:class="${i == currentPage ? 'active' : ''}"></a>
+                            </th:block>
+                            <a th:href="@{/products(page=${currentPage + 1})}" th:if="${currentPage < totalPages}">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div th:replace="~{layout :: footer}"></div>
+    
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/product-filters.js}"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Shop - Beautiful Flowers for Every Occasion</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Beautiful Flowers for Every Occasion</h1>
+                    <p>Find the perfect arrangement for your special moments</p>
+                    <a th:href="@{/products}" class="btn btn-primary">Shop Now</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Featured Categories -->
+        <section class="categories">
+            <div class="container">
+                <h2 class="section-title">Popular Categories</h2>
+                <div class="category-grid">
+                    <div class="category-card">
+                        <img th:src="@{/images/categories/roses.jpg}" alt="Roses">
+                        <h3>Roses</h3>
+                        <a th:href="@{/products?category=roses}" class="btn btn-outline">View Collection</a>
+                    </div>
+                    <div class="category-card">
+                        <img th:src="@{/images/categories/bouquets.jpg}" alt="Bouquets">
+                        <h3>Bouquets</h3>
+                        <a th:href="@{/products?category=bouquets}" class="btn btn-outline">View Collection</a>
+                    </div>
+                    <div class="category-card">
+                        <img th:src="@{/images/categories/arrangements.jpg}" alt="Arrangements">
+                        <h3>Arrangements</h3>
+                        <a th:href="@{/products?category=arrangements}" class="btn btn-outline">View Collection</a>
+                    </div>
+                    <div class="category-card">
+                        <img th:src="@{/images/categories/plants.jpg}" alt="Plants">
+                        <h3>Plants</h3>
+                        <a th:href="@{/products?category=plants}" class="btn btn-outline">View Collection</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Featured Products -->
+        <section class="featured-products">
+            <div class="container">
+                <h2 class="section-title">Featured Products</h2>
+                <div class="product-grid">
+                    <div class="product-card" th:each="product : ${featuredProducts}">
+                        <div class="product-image">
+                            <img th:src="@{${product.imageUrl}}" alt="Product Image">
+                            <div class="product-overlay">
+                                <a th:href="@{'/products/' + ${product.id}}" class="btn btn-secondary">View Details</a>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 th:text="${product.name}">Product Name</h3>
+                            <p class="price" th:text="${'$' + product.price}">$25.00</p>
+                            <button class="btn btn-primary add-to-cart" th:attr="data-id=${product.id}">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-all">
+                    <a th:href="@{/products}" class="btn btn-outline">View All Products</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Promotion Banner -->
+        <section class="promotion">
+            <div class="container">
+                <div class="promo-content">
+                    <h2>Special Offer</h2>
+                    <p>Get 15% off on all bouquets this week!</p>
+                    <a th:href="@{/products?category=bouquets}" class="btn btn-primary">Shop Now</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="container">
+                <h2 class="section-title">What Our Customers Say</h2>
+                <div class="testimonial-slider">
+                    <div class="testimonial">
+                        <div class="quote">"The flowers were absolutely beautiful and delivered on time. My wife loved them!"</div>
+                        <div class="author">- John Smith</div>
+                    </div>
+                    <div class="testimonial">
+                        <div class="quote">"Stunning arrangements and excellent customer service. Will definitely order again!"</div>
+                        <div class="author">- Jane Doe</div>
+                    </div>
+                    <div class="testimonial">
+                        <div class="quote">"The birthday bouquet I ordered was even more beautiful than the picture. Thank you!"</div>
+                        <div class="author">- Sarah Johnson</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div th:replace="~{layout :: footer}"></div>
+    
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

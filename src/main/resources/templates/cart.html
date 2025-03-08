@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Flower Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main>
+        <section class="cart-section">
+            <div class="container">
+                <div class="page-header">
+                    <h1>Your Shopping Cart</h1>
+                    <p>Review and modify your selected items</p>
+                </div>
+                
+                <div class="cart-container" th:if="${!#lists.isEmpty(cartItems)}">
+                    <div class="cart-items">
+                        <div class="cart-item" th:each="item : ${cartItems}">
+                            <div class="cart-item-image">
+                                <img th:src="@{${item.product.imageUrl}}" alt="Product Image">
+                            </div>
+                            <div class="cart-item-details">
+                                <h3 th:text="${item.product.name}">Product Name</h3>
+                                <p class="cart-item-price" th:text="${'$' + item.product.price}">$25.00</p>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn decrease" th:attr="data-id=${item.product.id}">-</button>
+                                    <input type="number" class="quantity-input" th:value="${item.quantity}" min="1" max="99" readonly>
+                                    <button class="quantity-btn increase" th:attr="data-id=${item.product.id}">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-total">
+                                <p th:text="${'$' + #numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">$50.00</p>
+                                <button class="btn-icon remove-item" th:attr="data-id=${item.product.id}">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <h3>Order Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span th:text="${'$' + #numbers.formatDecimal(subtotal, 1, 2)}">$75.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span th:text="${shipping > 0 ? '$' + #numbers.formatDecimal(shipping, 1, 2) : 'Free'}">$5.00</span>
+                        </div>
+                        <div class="summary-row discount" th:if="${discount > 0}">
+                            <span>Discount</span>
+                            <span th:text="${'-$' + #numbers.formatDecimal(discount, 1, 2)}">-$10.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span th:text="${'$' + #numbers.formatDecimal(total, 1, 2)}">$70.00</span>
+                        </div>
+                        
+                        <div class="coupon-section">
+                            <input type="text" id="coupon-code" placeholder="Coupon code">
+                            <button class="btn btn-secondary" id="apply-coupon">Apply</button>
+                        </div>
+                        
+                        <a th:href="@{/checkout}" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                        <a th:href="@{/products}" class="btn btn-outline btn-block">Continue Shopping</a>
+                    </div>
+                </div>
+                
+                <div class="empty-cart" th:if="${#lists.isEmpty(cartItems)}">
+                    <div class="empty-cart-content">
+                        <span class="material-icons">shopping_cart</span>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added any items to your cart yet.</p>
+                        <a th:href="@{/products}" class="btn btn-primary">Start Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div th:replace="~{layout :: footer}"></div>
+    
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/cart.js}"></script>
+</body>
+</html>

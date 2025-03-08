@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Flower Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout :: header}"></div>
+    
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-container">
+                    <div class="auth-box">
+                        <div class="auth-header">
+                            <h1>Login</h1>
+                            <p>Welcome back! Please login to your account.</p>
+                        </div>
+                        
+                        <div class="alert alert-danger" th:if="${param.error}">
+                            Invalid username or password.
+                        </div>
+                        
+                        <div class="alert alert-success" th:if="${param.logout}">
+                            You have been logged out.
+                        </div>
+                        
+                        <div class="alert alert-info" th:if="${param.registered}">
+                            Registration successful! Please login with your credentials.
+                        </div>
+                        
+                        <form th:action="@{/login}" method="post" class="auth-form">
+                            <div class="form-group">
+                                <label for="username">Email Address</label>
+                                <input type="email" id="username" name="username" required autofocus>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="form-options">
+                                <div class="remember-me">
+                                    <input type="checkbox" id="remember-me" name="remember-me">
+                                    <label for="remember-me">Remember me</label>
+                                </div>
+                                <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            </div>
+                        </form>
+                        
+                        <div class="social-login">
+                            <p>Or login with</p>
+                            <div class="social-buttons">
+                                <a href="/oauth2/authorization/google" class="social-btn google">
+                                    <span class="icon"></span>
+                                    <span>Google</span>
+                                </a>
+                                <a href="/oauth2/authorization/facebook" class="social-btn facebook">
+                                    <span class="icon"></span>
+                                    <span>Facebook</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="auth-footer">
+                            <p>Don't have an account? <a th:href="@{/register}">Register now</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div th:replace="~{layout :: footer}"></div>
+    
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

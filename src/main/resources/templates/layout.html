@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Shop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Header -->
+    <header th:fragment="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a th:href="@{/}">
+                    <h1>Flower Shop</h1>
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul>
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/products}">Products</a></li>
+                    <li><a th:href="@{/about}">About Us</a></li>
+                    <li><a th:href="@{/contact}">Contact</a></li>
+                    <li><a th:href="@{/blog}">Blog</a></li>
+                </ul>
+            </nav>
+            
+            <div class="user-actions">
+                <a th:href="@{/cart}" class="cart-icon">
+                    <span class="material-icons">shopping_cart</span>
+                    <span class="cart-count" th:text="${session.cartCount ?: 0}"></span>
+                </a>
+                
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn btn-outline">Login</a>
+                    <a th:href="@{/register}" class="btn btn-primary">Register</a>
+                </div>
+                
+                <div sec:authorize="isAuthenticated()" class="user-menu">
+                    <span sec:authentication="name"></span>
+                    <div class="dropdown-menu">
+                        <a th:href="@{/profile}">My Profile</a>
+                        <a th:href="@{/orders}">My Orders</a>
+                        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Admin Panel</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Footer -->
+    <footer th:fragment="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Flower Shop</h3>
+                    <p>Beautiful flowers for every occasion</p>
+                    <div class="social-links">
+                        <a href="#"><span class="material-icons">facebook</span></a>
+                        <a href="#"><span class="material-icons">instagram</span></a>
+                        <a href="#"><span class="material-icons">twitter</span></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a th:href="@{/}">Home</a></li>
+                        <li><a th:href="@{/products}">Products</a></li>
+                        <li><a th:href="@{/about}">About Us</a></li>
+                        <li><a th:href="@{/contact}">Contact</a></li>
+                        <li><a th:href="@{/blog}">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <address>
+                        <p>123 Flower Street</p>
+                        <p>Garden City, FC 12345</p>
+                        <p>Email: info@flowershop.com</p>
+                        <p>Phone: (123) 456-7890</p>
+                    </address>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter for updates</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email address">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Flower Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
